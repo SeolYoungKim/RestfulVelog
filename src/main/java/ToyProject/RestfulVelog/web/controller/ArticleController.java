@@ -1,19 +1,15 @@
 package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.domain.Article;
-import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
+import ToyProject.RestfulVelog.exception.ArticleException;
 import ToyProject.RestfulVelog.service.ArticleDto;
 import ToyProject.RestfulVelog.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -36,15 +32,7 @@ public class ArticleController {
     }
 
     @PostMapping("/article")
-    public Map<String, String> postArticle(@RequestBody @Validated ArticleDto articleDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            FieldError fieldError = fieldErrors.get(0);
-            String field = fieldError.getField();
-            String message = fieldError.getDefaultMessage();
-
-            return Map.of(field, message);
-        }
+    public Map<String, String> postArticle(@RequestBody @Validated ArticleDto articleDto) {
 
         articleService.saveArticle(articleDto);
 

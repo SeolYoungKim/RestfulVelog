@@ -1,12 +1,22 @@
 package ToyProject.RestfulVelog.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
+import java.util.HashMap;
+import java.util.Map;
+
+@Getter
+@NoArgsConstructor
 public class ErrorResult {
 
-    private String error;
-    private String massage;
+    private String code;
+    private String message;
+    private Map<String, String> causedBy;
+
+    @Builder
+    public ErrorResult(String code, String message, Map<String, String> causedBy) {
+        this.code = code;
+        this.message = message;
+        this.causedBy = causedBy;
+    }
 }

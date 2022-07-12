@@ -85,7 +85,10 @@ class ArticleControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/article")
                         .contentType(APPLICATION_JSON)
                         .content(json))
-                .andExpect(jsonPath("$.title").value("제목을 입력하세요."))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("제목을 입력하세요."))
+                .andExpect(jsonPath("$.causedBy.field").value("title"))
                 .andDo(print());
 
     }

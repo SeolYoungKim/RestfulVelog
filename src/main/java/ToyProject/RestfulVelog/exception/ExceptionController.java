@@ -3,18 +3,36 @@ package ToyProject.RestfulVelog.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler
-    public ResponseEntity<ErrorResult> articleHandler(ArticleException e) {
-        log.error("[글 관련 에러 발생]", e);
-        ErrorResult errorResult = new ErrorResult("ARTICLE-EX", e.getMessage());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorResult articleHandler(MethodArgumentNotValidException e) {
+        log.error("[ERROR]", e);
 
-        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+        FieldError fieldError = e.getFieldError();
+        if (fieldError != null) {
+            Map<String, String> field = new HashMap<>();
+            field.put("field", fieldError.getField());
+
+            return ErrorResult.builder()
+                    .code("404")
+                    .message(fieldError.getDefaultMessage())
+                    .causedBy(field)
+                    .build();
+        }
+
+        return new ErrorResult();
     }
 }
