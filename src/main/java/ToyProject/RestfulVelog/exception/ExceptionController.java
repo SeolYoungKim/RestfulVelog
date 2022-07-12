@@ -2,15 +2,13 @@ package ToyProject.RestfulVelog.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,18 +19,17 @@ public class ExceptionController {
     public ErrorResult articleHandler(MethodArgumentNotValidException e) {
         log.error("[ERROR]", e);
 
-        FieldError fieldError = e.getFieldError();
-        if (fieldError != null) {
-            Map<String, String> field = new HashMap<>();
-            field.put("field", fieldError.getField());
+        List<FieldError> fieldErrors = e.getFieldErrors();
 
-            return ErrorResult.builder()
-                    .code("404")
-                    .message(fieldError.getDefaultMessage())
-                    .causedBy(field)
-                    .build();
+        ErrorResult errorResult = ErrorResult.builder()
+                .code("404")
+                .message("잘못된 요청입니다.")
+                .build();
+
+        for (FieldError fieldError : fieldErrors) {
+            errorResult.causedByField(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
-        return new ErrorResult();
+        return errorResult;
     }
 }

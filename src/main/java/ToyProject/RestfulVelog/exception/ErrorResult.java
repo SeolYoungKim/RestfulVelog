@@ -11,12 +11,15 @@ public class ErrorResult {
 
     private String code;
     private String message;
-    private Map<String, String> causedBy;
+    private Map<String, String> causedBy = new HashMap<>();
 
     @Builder
-    public ErrorResult(String code, String message, Map<String, String> causedBy) {
+    public ErrorResult(String code, String message) {
         this.code = code;
         this.message = message;
-        this.causedBy = causedBy;
+    }
+
+    public void causedByField(String filed, String message) {
+        this.causedBy.put(filed, message);
     }
 }

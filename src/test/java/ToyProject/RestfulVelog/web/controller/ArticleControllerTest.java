@@ -80,15 +80,16 @@ class ArticleControllerTest {
     @Test
     void validationArticleDto() throws Exception {
 
-        String json = "{\"title\":\"\",\"text\":\"본문임ㅋ\"}";
+        String json = "{\"title\":\"\",\"text\":\"\"}";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/article")
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("404"))
-                .andExpect(jsonPath("$.message").value("제목을 입력하세요."))
-                .andExpect(jsonPath("$.causedBy.field").value("title"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.causedBy.title").value("제목을 입력하세요."))
+                .andExpect(jsonPath("$.causedBy.text").value("본문을 입력하세요."))
                 .andDo(print());
 
     }
