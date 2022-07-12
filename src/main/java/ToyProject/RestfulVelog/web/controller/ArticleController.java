@@ -5,13 +5,12 @@ import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.service.ArticleDto;
 import ToyProject.RestfulVelog.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ArticleController {
@@ -23,8 +22,16 @@ public class ArticleController {
         return "Hi!";
     }
 
-    @PostMapping("/post-article")
+    @GetMapping("/article/{id}")
+    public Article readArticle(@PathVariable Long id) {
+        log.info("왜 안나오냐? id={}", id);
+        log.info("왜 안나오냐? Article={}", articleService.findById(id));
+        return articleService.findById(id);
+    }
+
+    @PostMapping("/article")
     public void postArticle(@RequestBody @Validated ArticleDto articleDto) {
+        log.info("ArticleDto = {}", articleDto);
         articleService.saveArticle(articleDto);
     }
 }
