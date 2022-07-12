@@ -46,7 +46,7 @@ class ArticleControllerTest {
 
         String json = "{\"title\": \"제목입니다\", \"text\" : \"본문입니다\" }";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/article/1")
+        mockMvc.perform(MockMvcRequestBuilders.post("/article")
                 .contentType(APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
@@ -74,6 +74,20 @@ class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(json))
                 .andDo(print());
+    }
+
+    @DisplayName("ArticleDto 검증 테스트")
+    @Test
+    void validationArticleDto() throws Exception {
+
+        String json = "{\"title\":\"\",\"text\":\"본문임ㅋ\"}";
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/article")
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andExpect(jsonPath("$.title").value("제목을 입력하세요."))
+                .andDo(print());
+
     }
 }
 

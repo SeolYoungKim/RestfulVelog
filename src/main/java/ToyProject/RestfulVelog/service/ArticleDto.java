@@ -10,9 +10,9 @@ import javax.validation.constraints.NotBlank;
 @Getter @Setter
 public class ArticleDto {
 
-    @NotBlank
+    @NotBlank(message = "제목을 입력하세요.")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "본문을 입력하세요.")
     private String text;
 }
