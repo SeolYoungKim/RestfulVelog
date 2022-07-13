@@ -1,28 +1,38 @@
 package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.domain.Article;
+import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.service.ArticleService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@AutoConfigureMockMvc
+@SpringBootTest
 class ArticleControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private ArticleService articleService;
+
+    @Autowired
+    private ArticleRepository articleRepository;
+
+    @BeforeEach
+    void clear() {
+        articleRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("/ 요청 시 Hi! 를 출력한다.")
@@ -39,9 +49,9 @@ class ArticleControllerTest {
 
         String json = "{\"title\": \"제목입니다\", \"text\" : \"본문입니다\" }";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/article")
-                .contentType(APPLICATION_JSON)
-                .content(json))
+        mockMvc.perform(MockMvcRequestBuilders.post("/write")
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -56,21 +66,24 @@ class ArticleControllerTest {
                 .title("title")
                 .build();
 
-        // service 구현체가 없어도 테스트 가능!
-        given(this.articleService.findById(1L))  // findById 메소드에 parameter=1이 입력될 경우
-                .willReturn(article);  // article 객체를 리턴한다.
+//        // service 구현체가 없어도 테스트 가능! -> mock bean을 이용한 테스트 방법
+//        given(this.articleService.findById(1L))  // findById 메소드에 parameter=1이 입력될 경우
+//                .willReturn(article);  // article 객체를 리턴한다.
 
-        String json = "{\"title\":\"title\",\"text\":\"text\",\"aid\":null}";
+        articleRepository.save(article);
+        Long aId = article.getAId();
+
+        String json = "{\"title\":\"title\",\"text\":\"text\",\"aid\":" + aId +"}";
 
         // 글이 있을 때
-        mockMvc.perform(MockMvcRequestBuilders.get("/article/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/" + aId)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(json))
                 .andDo(print());
 
         // 글이 없을 때
-        mockMvc.perform(MockMvcRequestBuilders.get("/article/2")
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/2343")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("404"))
@@ -79,13 +92,46 @@ class ArticleControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("/articles 글 여러개를 조회한다.")
+    @Test
+    void readAllArticles() throws Exception {
+        Article article1 = Article.builder()
+                .title("title1")
+                .text("text1")
+                .build();
+
+        Article article2 = Article.builder()
+                .title("title2")
+                .text("text2")
+                .build();
+
+        articleRepository.save(article1);
+        articleRepository.save(article2);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/articles")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.title[0]").value("title1"))
+//                .andExpect(jsonPath("$.text[0]").value("text1"))
+//                .andExpect(jsonPath("$.title[1]").value("title2"))
+//                .andExpect(jsonPath("$.text[1]").value("text2"))
+                .andDo(print());
+    }
+
+    @DisplayName("/article/{id}/edit > 수정 테스트")
+    @Test
+    void editArticle() {
+
+        //TODO : controller test 실행하기
+    }
+
     @DisplayName("ArticleDto 검증 테스트")
     @Test
     void validationArticleDto() throws Exception {
 
         String json = "{\"title\":\"\",\"text\":\"\"}";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/article")
+        mockMvc.perform(MockMvcRequestBuilders.post("/write")
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())

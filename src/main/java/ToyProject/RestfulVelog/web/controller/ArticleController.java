@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -23,15 +25,26 @@ public class ArticleController {
 
     @GetMapping("/article/{id}")
     public Article readArticle(@PathVariable Long id) throws NullArticleException {
-
-        if (articleService.findById(id) == null)
-            throw new NullArticleException("글이 없습니다.");
-
         return articleService.findById(id);
     }
 
-    @PostMapping("/article")
-    public void postArticle(@RequestBody @Validated ArticleDto articleDto) {
+    @GetMapping("/articles")
+    public List<Article> readAllArticles() {
+        return articleService.findAll();
+    }
+
+    @PostMapping("/write")
+    public void writeArticle(@RequestBody @Validated ArticleDto articleDto) {
         articleService.saveArticle(articleDto);
     }
+
+    @PostMapping("/article/{id}/edit")
+    public void updateArticle(
+            @PathVariable Long id,
+            @RequestBody @Validated ArticleDto articleDto) throws NullArticleException {
+
+            articleService.editArticle(id, articleDto);
+
+    }
+
 }
