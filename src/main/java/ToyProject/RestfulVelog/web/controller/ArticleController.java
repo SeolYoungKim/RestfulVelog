@@ -1,16 +1,13 @@
 package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.domain.Article;
-import ToyProject.RestfulVelog.exception.ArticleException;
+import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.service.ArticleDto;
 import ToyProject.RestfulVelog.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -25,17 +22,16 @@ public class ArticleController {
     }
 
     @GetMapping("/article/{id}")
-    public Article readArticle(@PathVariable Long id) {
-        log.info("왜 안나오냐? id={}", id);
-        log.info("왜 안나오냐? Article={}", articleService.findById(id));
+    public Article readArticle(@PathVariable Long id) throws NullArticleException {
+
+        if (articleService.findById(id) == null)
+            throw new NullArticleException("글이 없습니다.");
+
         return articleService.findById(id);
     }
 
     @PostMapping("/article")
-    public Map<String, String> postArticle(@RequestBody @Validated ArticleDto articleDto) {
-
+    public void postArticle(@RequestBody @Validated ArticleDto articleDto) {
         articleService.saveArticle(articleDto);
-
-        return Map.of();  //TODO : 다른 좋은 반환값이 있다면 생각해보자. 리다이렉션과 연관지어볼 수 있을듯.
     }
 }

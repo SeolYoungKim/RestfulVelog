@@ -1,24 +1,17 @@
 package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.domain.Article;
-import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
-import ToyProject.RestfulVelog.service.ArticleDto;
 import ToyProject.RestfulVelog.service.ArticleService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -69,10 +62,20 @@ class ArticleControllerTest {
 
         String json = "{\"title\":\"title\",\"text\":\"text\",\"aid\":null}";
 
+        // 글이 있을 때
         mockMvc.perform(MockMvcRequestBuilders.get("/article/1")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(json))
+                .andDo(print());
+
+        // 글이 없을 때
+        mockMvc.perform(MockMvcRequestBuilders.get("/article/2")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.causedBy.pathVariable").value("조회할 글이 없습니다."))
                 .andDo(print());
     }
 
