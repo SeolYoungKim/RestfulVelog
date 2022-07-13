@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -118,11 +119,29 @@ class ArticleControllerTest {
                 .andDo(print());
     }
 
+    @Transactional
     @DisplayName("/article/{id}/edit > 수정 테스트")
     @Test
-    void editArticle() {
+    void editArticle() throws Exception {
+        Article article = Article.builder()
+                .title("제목임")
+                .text("본문임")
+                .build();
 
-        //TODO : controller test 실행하기
+        articleRepository.save(article);
+        Long aId = article.getAId();
+
+        String json = "{\"title\": \"제목입니다\", \"text\" : \"본문입니다\" }";
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/article/" + aId + "/edit")
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("제목입니다"))
+                .andExpect(jsonPath("$.text").value("본문입니다"))
+                .andExpect(jsonPath("$.aid").value(aId))
+                .andDo(print());
+
     }
 
     @DisplayName("ArticleDto 검증 테스트")

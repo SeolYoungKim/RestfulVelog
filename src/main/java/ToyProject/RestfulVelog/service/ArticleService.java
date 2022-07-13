@@ -23,15 +23,17 @@ public class ArticleService {
         articleRepository.save(article);
     }
 
-    public void editArticle(Long id, ArticleDto articleDto) throws NullArticleException {
+    public Article editArticle(Long id, ArticleDto articleDto) throws NullArticleException {
         Article findArticle = articleRepository.findById(id)
                 .orElseThrow(() -> new NullArticleException("글이 없습니다."));  //id로 객체를 찾는다
 
         findArticle.edit(articleDto.getTitle(), articleDto.getText());
-        articleRepository.save(findArticle);
+
+        return articleRepository.save(findArticle);
     }
 
     //TODO : Article -> 응답객체를 따로 만들어서 응답을 해보자.
+    //TODO : 스트림과 람다식을 쓰도록 노력해보자. map.. 등.. 공부 ㄱㄱ...
     public Article findById(Long id) throws NullArticleException {
         return articleRepository.findById(id).orElseThrow(() -> new NullArticleException("글이 없습니다."));
     }

@@ -39,11 +39,11 @@ public class ArticleController {
     }
 
     @PostMapping("/article/{id}/edit")
-    public void updateArticle(
+    public Article updateArticle(
             @PathVariable Long id,
             @RequestBody @Validated ArticleDto articleDto) throws NullArticleException {
 
-            articleService.editArticle(id, articleDto);
+            return articleService.editArticle(id, articleDto);
 
     }
 
