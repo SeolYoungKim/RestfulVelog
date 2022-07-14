@@ -3,8 +3,8 @@ package ToyProject.RestfulVelog.service;
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.exception.NullArticleException;
-import ToyProject.RestfulVelog.request.RequestArticleDto;
-import ToyProject.RestfulVelog.response.ResponseArticleDto;
+import ToyProject.RestfulVelog.web.request.RequestArticleDto;
+import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +58,9 @@ public class ArticleService {
                 .map(ResponseArticleDto::new)
                 .collect(Collectors.toList());
     }
+
+
+    //TODO: 페이징처리 공부하다가 시간이 다 갔다. 다시 한번 봐보자. 한 2시간 더 고민해보고, 안되면 호돌맨님 강의 참고하자.
 
 
 }

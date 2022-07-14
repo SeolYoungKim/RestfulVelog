@@ -2,8 +2,8 @@ package ToyProject.RestfulVelog.service;
 
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
-import ToyProject.RestfulVelog.request.RequestArticleDto;
-import ToyProject.RestfulVelog.response.ResponseArticleDto;
+import ToyProject.RestfulVelog.web.request.RequestArticleDto;
+import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

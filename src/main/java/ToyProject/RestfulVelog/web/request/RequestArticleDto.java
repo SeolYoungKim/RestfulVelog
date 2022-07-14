@@ -1,4 +1,4 @@
-package ToyProject.RestfulVelog.request;
+package ToyProject.RestfulVelog.web.request;
 
 import lombok.Getter;
 import lombok.Setter;

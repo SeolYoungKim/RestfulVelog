@@ -1,9 +1,9 @@
 package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.exception.NullArticleException;
-import ToyProject.RestfulVelog.request.RequestArticleDto;
-import ToyProject.RestfulVelog.response.ResponseArticleDto;
 import ToyProject.RestfulVelog.service.ArticleService;
+import ToyProject.RestfulVelog.web.request.RequestArticleDto;
+import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +33,7 @@ public class ArticleController {
         return articleService.findAll();
     }
 
+
     @PostMapping("/write")
     public ResponseArticleDto writeArticle(@RequestBody @Validated RequestArticleDto requestArticleDto) {
         return articleService.saveArticle(requestArticleDto);
@@ -43,8 +44,7 @@ public class ArticleController {
             @PathVariable Long id,
             @RequestBody @Validated RequestArticleDto requestArticleDto) throws NullArticleException {
 
-            return articleService.editArticle(id, requestArticleDto);
+        return articleService.editArticle(id, requestArticleDto);
 
     }
-
 }

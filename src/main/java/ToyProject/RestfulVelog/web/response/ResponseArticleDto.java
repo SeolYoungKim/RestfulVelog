@@ -1,4 +1,4 @@
-package ToyProject.RestfulVelog.response;
+package ToyProject.RestfulVelog.web.response;
 
 import ToyProject.RestfulVelog.domain.Article;
 import lombok.Builder;

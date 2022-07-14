@@ -62,17 +62,17 @@ class ArticleControllerTest {
     @Test
     void readArticle() throws Exception {
 
-        Article article = Article.builder()
+        Article article = articleRepository.save(Article.builder()
                 .text("text")
                 .title("title")
-                .build();
+                .build());
+
+        Long aId = article.getAId();
 
 //        // service 구현체가 없어도 테스트 가능! -> mock bean을 이용한 테스트 방법
 //        given(this.articleService.findById(1L))  // findById 메소드에 parameter=1이 입력될 경우
 //                .willReturn(article);  // article 객체를 리턴한다.
 
-        articleRepository.save(article);
-        Long aId = article.getAId();
 
         // 글이 있을 때
         mockMvc.perform(MockMvcRequestBuilders.get("/article/" + aId)
@@ -96,26 +96,39 @@ class ArticleControllerTest {
     @DisplayName("/articles 글 여러개를 조회한다.")
     @Test
     void readAllArticles() throws Exception {
-        Article article1 = Article.builder()
-                .title("title1")
-                .text("text1")
-                .build();
-
-        Article article2 = Article.builder()
-                .title("title2")
-                .text("text2")
-                .build();
 
         //save를 테스트 코드 내에서 했기 때문에, Transactional 어노테이션이 필요없음. 외부에 세이브 메서드가 있으면 Transactional 어노테이션을 달아주자.
-        articleRepository.save(article1);
-        articleRepository.save(article2);
+
+//        articleRepository.saveAll(
+//                List.of(
+//                        Article.builder()
+//                                .title("title1")
+//                                .text("text1")
+//                                .build(),
+//                        Article.builder()
+//                                .title("title2")
+//                                .text("text2")
+//                                .build()
+//                ));
+
+        Article article1 = articleRepository.save(Article.builder()
+                .title("title1")
+                .text("text1")
+                .build());
+
+        Article article2 = articleRepository.save(Article.builder()
+                .title("title2")
+                .text("text2")
+                .build());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/articles")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.[0].id").value(article1.getAId()))
                 .andExpect(jsonPath("$.[0].title").value("title1"))
                 .andExpect(jsonPath("$.[0].text").value("text1"))
+                .andExpect(jsonPath("$.[1].id").value(article2.getAId()))
                 .andExpect(jsonPath("$.[1].title").value("title2"))
                 .andExpect(jsonPath("$.[1].text").value("text2"))
                 .andDo(print());
