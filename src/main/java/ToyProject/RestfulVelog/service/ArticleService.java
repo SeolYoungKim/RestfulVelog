@@ -25,10 +25,7 @@ public class ArticleService {
 
         articleRepository.save(article);
 
-        return ResponseArticleDto.builder()
-                .title(article.getTitle())
-                .text(article.getText())
-                .build();
+        return new ResponseArticleDto(article);
     }
 
     public ResponseArticleDto editArticle(Long id, RequestArticleDto requestArticleDto) throws NullArticleException {
@@ -39,38 +36,26 @@ public class ArticleService {
 
         Article editedArticle = articleRepository.save(findArticle);
 
-        return ResponseArticleDto.builder()
-                .title(editedArticle.getTitle())
-                .text(editedArticle.getText())
-                .build();
+        return new ResponseArticleDto(editedArticle);
     }
 
     public ResponseArticleDto findById(Long id) throws NullArticleException {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new NullArticleException("글이 없습니다."));
 
-        return ResponseArticleDto.builder()
-                .title(article.getTitle())
-                .text(article.getText())
-                .build();
+        return new ResponseArticleDto(article);
     }
 
     public List<ResponseArticleDto> findAll() {
-        return articleRepository.findAll()
-                .stream()
-                .map(article -> ResponseArticleDto.builder()
-                                .title(article.getTitle())
-                                .text(article.getText())
-                                .build())
+        return articleRepository.findAll().stream()
+                .map(ResponseArticleDto::new)
                 .collect(Collectors.toList());
     }
 
+    // builder를 사용해서 매핑하여 반환하는 예제. 이렇게 작성하면 긴 코드가 상당히 반복적으로 작업되기 때문에 피곤한다. 위와 같이 변경하자.
     public List<ResponseArticleDto> findByTitle(String title) {
         return articleRepository.findByTitle(title).stream()
-                .map(article -> ResponseArticleDto.builder()
-                        .title(article.getTitle())
-                        .text(article.getText())
-                        .build())
+                .map(ResponseArticleDto::new)
                 .collect(Collectors.toList());
     }
 

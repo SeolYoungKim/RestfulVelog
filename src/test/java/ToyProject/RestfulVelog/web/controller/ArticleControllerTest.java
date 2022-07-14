@@ -74,13 +74,13 @@ class ArticleControllerTest {
         articleRepository.save(article);
         Long aId = article.getAId();
 
-        String json = "{\"title\":\"title\",\"text\":\"text\"}";
-
         // 글이 있을 때
         mockMvc.perform(MockMvcRequestBuilders.get("/article/" + aId)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(json))
+                .andExpect(jsonPath("$.id").value(aId))
+                .andExpect(jsonPath("$.title").value(article.getTitle()))
+                .andExpect(jsonPath("$.text").value(article.getText()))
                 .andDo(print());
 
         // 글이 없을 때
@@ -106,16 +106,18 @@ class ArticleControllerTest {
                 .text("text2")
                 .build();
 
+        //save를 테스트 코드 내에서 했기 때문에, Transactional 어노테이션이 필요없음. 외부에 세이브 메서드가 있으면 Transactional 어노테이션을 달아주자.
         articleRepository.save(article1);
         articleRepository.save(article2);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/articles")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.title[0]").value("title1"))
-//                .andExpect(jsonPath("$.text[0]").value("text1"))
-//                .andExpect(jsonPath("$.title[1]").value("title2"))
-//                .andExpect(jsonPath("$.text[1]").value("text2"))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$.[0].title").value("title1"))
+                .andExpect(jsonPath("$.[0].text").value("text1"))
+                .andExpect(jsonPath("$.[1].title").value("title2"))
+                .andExpect(jsonPath("$.[1].text").value("text2"))
                 .andDo(print());
     }
 
