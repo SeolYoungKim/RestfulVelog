@@ -3,10 +3,13 @@ package ToyProject.RestfulVelog.service;
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.exception.NullArticleException;
+import ToyProject.RestfulVelog.request.RequestArticleDto;
+import ToyProject.RestfulVelog.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -14,37 +17,73 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    public void saveArticle(ArticleDto articleDto) {
+    public ResponseArticleDto saveArticle(RequestArticleDto requestArticleDto) {
         Article article = Article.builder()
-                .title(articleDto.getTitle())
-                .text(articleDto.getText())
+                .title(requestArticleDto.getTitle())
+                .text(requestArticleDto.getText())
                 .build();
 
         articleRepository.save(article);
+
+        return ResponseArticleDto.builder()
+                .title(article.getTitle())
+                .text(article.getText())
+                .build();
     }
 
-    public Article editArticle(Long id, ArticleDto articleDto) throws NullArticleException {
+    public ResponseArticleDto editArticle(Long id, RequestArticleDto requestArticleDto) throws NullArticleException {
         Article findArticle = articleRepository.findById(id)
                 .orElseThrow(() -> new NullArticleException("글이 없습니다."));  //id로 객체를 찾는다
 
-        findArticle.edit(articleDto.getTitle(), articleDto.getText());
+        findArticle.edit(requestArticleDto.getTitle(), requestArticleDto.getText());
 
-        return articleRepository.save(findArticle);
+        Article editedArticle = articleRepository.save(findArticle);
+
+        return ResponseArticleDto.builder()
+                .title(editedArticle.getTitle())
+                .text(editedArticle.getText())
+                .build();
     }
 
-    //TODO : Article -> 응답객체를 따로 만들어서 응답을 해보자.
-    //TODO : 스트림과 람다식을 쓰도록 노력해보자. map.. 등.. 공부 ㄱㄱ...
-    public Article findById(Long id) throws NullArticleException {
-        return articleRepository.findById(id).orElseThrow(() -> new NullArticleException("글이 없습니다."));
+    public ResponseArticleDto findById(Long id) throws NullArticleException {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new NullArticleException("글이 없습니다."));
+
+        return ResponseArticleDto.builder()
+                .title(article.getTitle())
+                .text(article.getText())
+                .build();
     }
 
-    public List<Article> findAll() {
-        return articleRepository.findAll();
+    public List<ResponseArticleDto> findAll() {
+        return articleRepository.findAll()
+                .stream()
+                .map(article -> ResponseArticleDto.builder()
+                                .title(article.getTitle())
+                                .text(article.getText())
+                                .build())
+                .collect(Collectors.toList());
     }
 
-    public List<Article> findByTitle(String title) {
-        return articleRepository.findByTitle(title);
+    public List<ResponseArticleDto> findByTitle(String title) {
+        return articleRepository.findByTitle(title).stream()
+                .map(article -> ResponseArticleDto.builder()
+                        .title(article.getTitle())
+                        .text(article.getText())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 
 }
+
+
+
+
+
+
+
+
+
+
+

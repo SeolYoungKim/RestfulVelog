@@ -74,7 +74,7 @@ class ArticleControllerTest {
         articleRepository.save(article);
         Long aId = article.getAId();
 
-        String json = "{\"title\":\"title\",\"text\":\"text\",\"aid\":" + aId +"}";
+        String json = "{\"title\":\"title\",\"text\":\"text\"}";
 
         // 글이 있을 때
         mockMvc.perform(MockMvcRequestBuilders.get("/article/" + aId)
@@ -139,7 +139,6 @@ class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("제목입니다"))
                 .andExpect(jsonPath("$.text").value("본문입니다"))
-                .andExpect(jsonPath("$.aid").value(aId))
                 .andDo(print());
 
     }

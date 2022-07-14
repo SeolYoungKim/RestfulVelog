@@ -1,4 +1,4 @@
-package ToyProject.RestfulVelog.service;
+package ToyProject.RestfulVelog.request;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 @ToString
 @Getter @Setter
-public class ArticleDto {
+public class RequestArticleDto {
 
     @NotBlank(message = "제목을 입력하세요.")
     private String title;

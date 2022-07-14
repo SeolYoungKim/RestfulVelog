@@ -1,8 +1,8 @@
 package ToyProject.RestfulVelog.web.controller;
 
-import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.exception.NullArticleException;
-import ToyProject.RestfulVelog.service.ArticleDto;
+import ToyProject.RestfulVelog.request.RequestArticleDto;
+import ToyProject.RestfulVelog.response.ResponseArticleDto;
 import ToyProject.RestfulVelog.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,26 +24,26 @@ public class ArticleController {
     }
 
     @GetMapping("/article/{id}")
-    public Article readArticle(@PathVariable Long id) throws NullArticleException {
+    public ResponseArticleDto readArticle(@PathVariable Long id) throws NullArticleException {
         return articleService.findById(id);
     }
 
     @GetMapping("/articles")
-    public List<Article> readAllArticles() {
+    public List<ResponseArticleDto> readAllArticles() {
         return articleService.findAll();
     }
 
     @PostMapping("/write")
-    public void writeArticle(@RequestBody @Validated ArticleDto articleDto) {
-        articleService.saveArticle(articleDto);
+    public ResponseArticleDto writeArticle(@RequestBody @Validated RequestArticleDto requestArticleDto) {
+        return articleService.saveArticle(requestArticleDto);
     }
 
     @PostMapping("/article/{id}/edit")
-    public Article updateArticle(
+    public ResponseArticleDto updateArticle(
             @PathVariable Long id,
-            @RequestBody @Validated ArticleDto articleDto) throws NullArticleException {
+            @RequestBody @Validated RequestArticleDto requestArticleDto) throws NullArticleException {
 
-            return articleService.editArticle(id, articleDto);
+            return articleService.editArticle(id, requestArticleDto);
 
     }
 

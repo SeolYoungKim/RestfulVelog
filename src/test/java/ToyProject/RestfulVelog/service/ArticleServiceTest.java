@@ -2,6 +2,8 @@ package ToyProject.RestfulVelog.service;
 
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
+import ToyProject.RestfulVelog.request.RequestArticleDto;
+import ToyProject.RestfulVelog.response.ResponseArticleDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,11 +65,11 @@ class ArticleServiceTest {
         articleRepository.save(article1);
         articleRepository.save(article2);
 
-        List<Article> all = articleService.findAll();
+        List<ResponseArticleDto> all = articleService.findAll();
 
         assertThat(all.size()).isEqualTo(2);
-        assertThat(all.get(0)).isEqualTo(article1);
-        assertThat(all.get(1)).isEqualTo(article2);
+        assertThat(all.get(0).getTitle()).isEqualTo("제목1");
+        assertThat(all.get(1).getTitle()).isEqualTo("제목2");
     }
 
     @DisplayName("글 수정 테스트")
@@ -79,13 +81,13 @@ class ArticleServiceTest {
                 .text("글")
                 .build();
 
-        ArticleDto articleDto = new ArticleDto();
-        articleDto.setTitle("제목이지롱");
-        articleDto.setText("글이지롱");
+        RequestArticleDto requestArticleDto = new RequestArticleDto();
+        requestArticleDto.setTitle("제목이지롱");
+        requestArticleDto.setText("글이지롱");
 
         articleRepository.save(article);
 
-        articleService.editArticle(article.getAId(), articleDto);
+        articleService.editArticle(article.getAId(), requestArticleDto);
 
         assertThat(article.getTitle()).isEqualTo("제목이지롱");
         assertThat(article.getText()).isEqualTo("글이지롱");
