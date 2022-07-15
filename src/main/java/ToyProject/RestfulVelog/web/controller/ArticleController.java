@@ -8,12 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Slf4j
 @RestController
@@ -32,16 +33,16 @@ public class ArticleController {
         return articleService.findById(id);
     }
 
-    //페이징 처리 안함.
+    //페이징 처리 - 호돌맨
     @GetMapping("/articles")
-    public List<ResponseArticleDto> readAllArticles() {
-        return articleService.findAll();
+    public List<ResponseArticleDto> readAllArticles(Pageable pageable) {
+        return articleService.findAll(pageable);
     }
 
     //Page 객체를 이용한 페이징 처리 TODO: sort를 LocalDateTime으로 해줘도 괜찮을듯.
     @GetMapping("/page")
     public Page<ResponseArticleDto> paging(
-            @PageableDefault(size = 5, sort = "aId", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 5, sort = "aId", direction = DESC) Pageable pageable) {
         return articleService.findAllToPage(pageable);
 
     }

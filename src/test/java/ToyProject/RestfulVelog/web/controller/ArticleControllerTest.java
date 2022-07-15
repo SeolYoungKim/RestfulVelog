@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -99,29 +101,25 @@ class ArticleControllerTest {
     @DisplayName("/articles 글 여러개를 조회한다.")
     @Test
     void readAllArticles() throws Exception {
-
         //save를 테스트 코드 내에서 했기 때문에, Transactional 어노테이션이 필요없음. 외부에 세이브 메서드가 있으면 Transactional 어노테이션을 달아주자.
-        Article article1 = articleRepository.save(Article.builder()
-                .title("title1")
-                .text("text1")
-                .build());
+        List<Article> requestArticles = IntStream.range(1, 31)
+                .mapToObj(i -> Article.builder()
+                        .title("제목 " + i)
+                        .text("내용 " + i)
+                        .build())
+                .collect(Collectors.toList());
 
-        Article article2 = articleRepository.save(Article.builder()
-                .title("title2")
-                .text("text2")
-                .build());
+        articleRepository.saveAll(requestArticles);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/articles")
+        mockMvc.perform(MockMvcRequestBuilders.get("/articles?page=1&sort=aId,desc")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$.[0].id").value(article1.getAId()))
-                .andExpect(jsonPath("$.[0].title").value("title1"))
-                .andExpect(jsonPath("$.[0].text").value("text1"))
-                .andExpect(jsonPath("$.[1].id").value(article2.getAId()))
-                .andExpect(jsonPath("$.[1].title").value("title2"))
-                .andExpect(jsonPath("$.[1].text").value("text2"))
+                .andExpect(jsonPath("$.length()").value(5))
+                .andExpect(jsonPath("$[0].id").value(30))
+                .andExpect(jsonPath("$[0].title").value("제목 30"))
+                .andExpect(jsonPath("$[0].text").value("내용 30"))
                 .andDo(print());
+
     }
 
     @DisplayName(("/page 조회 시, 페이징 처리가 된 결과를 얻을 수 있다."))

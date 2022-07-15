@@ -9,11 +9,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @SpringBootTest
 class ArticleServiceTest {
@@ -48,28 +53,26 @@ class ArticleServiceTest {
         assertThat(findByTitle.size()).isEqualTo(1);
     }
 
-    @DisplayName("글 전부 조회")
+    @DisplayName("글 1페이지 조회")
     @Transactional
     @Test
     void readAllArticle() {
-        Article article1 = Article.builder()
-                .title("제목1")
-                .text("글1")
-                .build();
+        List<Article> requestArticles = IntStream.range(1, 31)
+                .mapToObj(i -> Article.builder()
+                                .title("제목 " + i)
+                                .text("내용 " + i)
+                                .build())
+                .collect(Collectors.toList());
 
-        Article article2 = Article.builder()
-                .title("제목2")
-                .text("글2")
-                .build();
+        articleRepository.saveAll(requestArticles);
 
-        articleRepository.save(article1);
-        articleRepository.save(article2);
+        Pageable pageable = PageRequest.of(0, 5, DESC, "aId");
 
-        List<ResponseArticleDto> all = articleService.findAll();
+        List<ResponseArticleDto> articles = articleService.findAll(pageable);
 
-        assertThat(all.size()).isEqualTo(2);
-        assertThat(all.get(0).getTitle()).isEqualTo("제목1");
-        assertThat(all.get(1).getTitle()).isEqualTo("제목2");
+        assertThat(articles.size()).isEqualTo(5);
+        assertThat(articles.get(0).getTitle()).isEqualTo("제목 30");
+        assertThat(articles.get(4).getTitle()).isEqualTo("제목 26");
     }
 
     @DisplayName("글 수정 테스트")

@@ -47,8 +47,13 @@ public class ArticleService {
         return new ResponseArticleDto(article);
     }
 
-    public List<ResponseArticleDto> findAll() {
-        return articleRepository.findAll().stream()
+
+    //TODO: 호돌맨님 강의 들은 후, 혼자 복습 및 사용해보기.
+    public List<ResponseArticleDto> findAll(Pageable pageable) {
+
+//        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "aId"));
+
+        return articleRepository.findAll(pageable).stream()
                 .map(ResponseArticleDto::new)
                 .collect(Collectors.toList());
     }
