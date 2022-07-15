@@ -6,6 +6,9 @@ import ToyProject.RestfulVelog.web.request.RequestArticleDto;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,4 +50,12 @@ public class ArticleController {
         return articleService.editArticle(id, requestArticleDto);
 
     }
+
+    //Page 객체를 이용한 페이징 처리 TODO: sort를 LocalDateTime으로 해줘도 괜찮을듯.
+    @GetMapping("/page")
+    public Page<ResponseArticleDto> paging(@PageableDefault(size = 5, sort = "aId") Pageable pageable) {
+        return articleService.findAllToPage(pageable);
+
+    }
+
 }

@@ -6,6 +6,7 @@ import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.web.request.RequestArticleDto;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,7 +61,17 @@ public class ArticleService {
     }
 
 
-    //TODO: 페이징처리 공부하다가 시간이 다 갔다. 다시 한번 봐보자. 한 2시간 더 고민해보고, 안되면 호돌맨님 강의 참고하자.
+    //TODO: 페이징처리
+    //1. Page 반환
+    public Page<ResponseArticleDto> findAllToPage(Pageable pageable) {
+
+        List<ResponseArticleDto> collect = articleRepository.findAll(pageable).get()
+                .map(ResponseArticleDto::new)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(collect);
+    }
+
 
 
 }
