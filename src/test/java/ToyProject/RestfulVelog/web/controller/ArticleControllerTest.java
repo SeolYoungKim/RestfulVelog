@@ -13,6 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -98,19 +101,6 @@ class ArticleControllerTest {
     void readAllArticles() throws Exception {
 
         //save를 테스트 코드 내에서 했기 때문에, Transactional 어노테이션이 필요없음. 외부에 세이브 메서드가 있으면 Transactional 어노테이션을 달아주자.
-
-//        articleRepository.saveAll(
-//                List.of(
-//                        Article.builder()
-//                                .title("title1")
-//                                .text("text1")
-//                                .build(),
-//                        Article.builder()
-//                                .title("title2")
-//                                .text("text2")
-//                                .build()
-//                ));
-
         Article article1 = articleRepository.save(Article.builder()
                 .title("title1")
                 .text("text1")
@@ -131,6 +121,32 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.[1].id").value(article2.getAId()))
                 .andExpect(jsonPath("$.[1].title").value("title2"))
                 .andExpect(jsonPath("$.[1].text").value("text2"))
+                .andDo(print());
+    }
+
+    @DisplayName(("/page 조회 시, 페이징 처리가 된 결과를 얻을 수 있다."))
+    @Test
+    void pageOfArticles() throws Exception {
+
+        List<Article> articleList = new ArrayList<>();
+
+        for (int i = 0; i < 30; i++) {
+            articleList.add(
+                    Article.builder()
+                            .title("title" + i)
+                            .text("text" + i)
+                            .build()
+            );
+        }
+
+        articleRepository.saveAll(articleList);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/page")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.content.[0].title").value("title29"))
+                .andExpect(jsonPath("$.content.[0].text").value("text29"))
                 .andDo(print());
     }
 
