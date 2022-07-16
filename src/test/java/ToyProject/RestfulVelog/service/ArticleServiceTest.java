@@ -2,6 +2,7 @@ package ToyProject.RestfulVelog.service;
 
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
+import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.RequestArticleDto;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,8 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @SpringBootTest
 class ArticleServiceTest {
@@ -66,13 +64,15 @@ class ArticleServiceTest {
 
         articleRepository.saveAll(requestArticles);
 
-        Pageable pageable = PageRequest.of(0, 5, DESC, "aId");
+        ArticleSearch articleSearch = ArticleSearch.builder()
+                .build();
 
-        List<ResponseArticleDto> articles = articleService.findAll(pageable);
 
-        assertThat(articles.size()).isEqualTo(5);
+        List<ResponseArticleDto> articles = articleService.getList(articleSearch);
+
+        assertThat(articles.size()).isEqualTo(10);
         assertThat(articles.get(0).getTitle()).isEqualTo("제목 30");
-        assertThat(articles.get(4).getTitle()).isEqualTo("제목 26");
+        assertThat(articles.get(9).getTitle()).isEqualTo("제목 21");
     }
 
     @DisplayName("글 수정 테스트")

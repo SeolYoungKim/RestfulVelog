@@ -22,6 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Transactional
 @AutoConfigureMockMvc
 @SpringBootTest
 class ArticleControllerTest {
@@ -37,7 +38,7 @@ class ArticleControllerTest {
 
     @BeforeEach
     void clear() {
-        articleRepository.deleteAll();
+        articleRepository.deleteAllInBatch();
     }
 
     @Test
@@ -111,11 +112,33 @@ class ArticleControllerTest {
 
         articleRepository.saveAll(requestArticles);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/articles?page=1&sort=aId,desc")
+        mockMvc.perform(MockMvcRequestBuilders.get("/articles?page=1&size=10")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(5))
-                .andExpect(jsonPath("$[0].id").value(30))
+                .andExpect(jsonPath("$.length()").value(10))
+                .andExpect(jsonPath("$[0].title").value("제목 30"))
+                .andExpect(jsonPath("$[0].text").value("내용 30"))
+                .andDo(print());
+
+    }
+
+    @DisplayName("/articles 페이지를 0으로 요청해도, 첫 페이지를 가져온다.")
+    @Test
+    void pageZeroTest() throws Exception {
+        //save를 테스트 코드 내에서 했기 때문에, Transactional 어노테이션이 필요없음. 외부에 세이브 메서드가 있으면 Transactional 어노테이션을 달아주자.
+        List<Article> requestArticles = IntStream.range(1, 31)
+                .mapToObj(i -> Article.builder()
+                        .title("제목 " + i)
+                        .text("내용 " + i)
+                        .build())
+                .collect(Collectors.toList());
+
+        articleRepository.saveAll(requestArticles);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/articles?page=0&size=10")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
                 .andExpect(jsonPath("$[0].title").value("제목 30"))
                 .andExpect(jsonPath("$[0].text").value("내용 30"))
                 .andDo(print());

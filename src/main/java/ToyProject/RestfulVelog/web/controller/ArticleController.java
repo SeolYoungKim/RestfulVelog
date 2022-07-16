@@ -2,6 +2,7 @@ package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.service.ArticleService;
+import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.RequestArticleDto;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,8 @@ public class ArticleController {
 
     //페이징 처리 - 호돌맨
     @GetMapping("/articles")
-    public List<ResponseArticleDto> readAllArticles(Pageable pageable) {
-        return articleService.findAll(pageable);
+    public List<ResponseArticleDto> readAllArticles(@ModelAttribute ArticleSearch articleSearch) {
+        return articleService.getList(articleSearch);
     }
 
     //Page 객체를 이용한 페이징 처리 TODO: sort를 LocalDateTime으로 해줘도 괜찮을듯.

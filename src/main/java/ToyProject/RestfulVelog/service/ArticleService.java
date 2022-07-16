@@ -3,6 +3,7 @@ package ToyProject.RestfulVelog.service;
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.exception.NullArticleException;
+import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.RequestArticleDto;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
@@ -49,11 +50,11 @@ public class ArticleService {
 
 
     //TODO: 호돌맨님 강의 들은 후, 혼자 복습 및 사용해보기.
-    public List<ResponseArticleDto> findAll(Pageable pageable) {
+    public List<ResponseArticleDto> getList(ArticleSearch articleSearch) {
 
 //        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "aId"));
 
-        return articleRepository.findAll(pageable).stream()
+        return articleRepository.getPageList(articleSearch).stream()
                 .map(ResponseArticleDto::new)
                 .collect(Collectors.toList());
     }
