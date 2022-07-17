@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 @ToString
 @Getter @Setter
-public class RequestArticleDto {
+public class AddArticle {
 
     @NotBlank(message = "제목을 입력하세요.")
     private String title;

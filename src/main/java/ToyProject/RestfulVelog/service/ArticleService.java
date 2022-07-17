@@ -3,8 +3,9 @@ package ToyProject.RestfulVelog.service;
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.exception.NullArticleException;
+import ToyProject.RestfulVelog.web.request.AddArticle;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
-import ToyProject.RestfulVelog.web.request.RequestArticleDto;
+import ToyProject.RestfulVelog.web.request.EditArticle;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -19,10 +20,10 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    public ResponseArticleDto saveArticle(RequestArticleDto requestArticleDto) {
+    public ResponseArticleDto saveArticle(AddArticle addArticle) {
         Article article = Article.builder()
-                .title(requestArticleDto.getTitle())
-                .text(requestArticleDto.getText())
+                .title(addArticle.getTitle())
+                .text(addArticle.getText())
                 .build();
 
         articleRepository.save(article);
@@ -30,11 +31,11 @@ public class ArticleService {
         return new ResponseArticleDto(article);
     }
 
-    public ResponseArticleDto editArticle(Long id, RequestArticleDto requestArticleDto) throws NullArticleException {
+    public ResponseArticleDto editArticle(Long id, EditArticle editArticle) throws NullArticleException {
         Article findArticle = articleRepository.findById(id)
                 .orElseThrow(() -> new NullArticleException("글이 없습니다."));  //id로 객체를 찾는다
 
-        findArticle.edit(requestArticleDto.getTitle(), requestArticleDto.getText());
+        findArticle.edit(editArticle);
 
         Article editedArticle = articleRepository.save(findArticle);
 

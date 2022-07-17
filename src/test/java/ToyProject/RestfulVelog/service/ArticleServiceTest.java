@@ -3,7 +3,7 @@ package ToyProject.RestfulVelog.service;
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
-import ToyProject.RestfulVelog.web.request.RequestArticleDto;
+import ToyProject.RestfulVelog.web.request.EditArticle;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,13 +84,13 @@ class ArticleServiceTest {
                 .text("글")
                 .build();
 
-        RequestArticleDto requestArticleDto = new RequestArticleDto();
-        requestArticleDto.setTitle("제목이지롱");
-        requestArticleDto.setText("글이지롱");
+        EditArticle editArticle = new EditArticle();
+        editArticle.setTitle("제목이지롱");
+        editArticle.setText("글이지롱");
 
         articleRepository.save(article);
 
-        articleService.editArticle(article.getAId(), requestArticleDto);
+        articleService.editArticle(article.getAId(), editArticle);
 
         assertThat(article.getTitle()).isEqualTo("제목이지롱");
         assertThat(article.getText()).isEqualTo("글이지롱");

@@ -3,7 +3,8 @@ package ToyProject.RestfulVelog.web.controller;
 import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.service.ArticleService;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
-import ToyProject.RestfulVelog.web.request.RequestArticleDto;
+import ToyProject.RestfulVelog.web.request.AddArticle;
+import ToyProject.RestfulVelog.web.request.EditArticle;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,16 +50,16 @@ public class ArticleController {
     }
 
     @PostMapping("/write")
-    public ResponseArticleDto writeArticle(@RequestBody @Validated RequestArticleDto requestArticleDto) {
-        return articleService.saveArticle(requestArticleDto);
+    public ResponseArticleDto writeArticle(@RequestBody @Validated AddArticle addArticle) {
+        return articleService.saveArticle(addArticle);
     }
 
     @PostMapping("/article/{id}/edit")
     public ResponseArticleDto updateArticle(
             @PathVariable Long id,
-            @RequestBody @Validated RequestArticleDto requestArticleDto) throws NullArticleException {
+            @RequestBody @Validated EditArticle editArticle) throws NullArticleException {
 
-        return articleService.editArticle(id, requestArticleDto);
+        return articleService.editArticle(id, editArticle);
     }
 
 }

@@ -1,5 +1,6 @@
 package ToyProject.RestfulVelog.domain;
 
+import ToyProject.RestfulVelog.web.request.EditArticle;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,8 +25,8 @@ public class Article {
         this.text = text;
     }
 
-    public void edit(String title, String text) {
-        this.title = title;
-        this.text = text;
+    public void edit(EditArticle editArticle) {
+        this.title = editArticle.getTitle();
+        this.text = editArticle.getText();
     }
 }
