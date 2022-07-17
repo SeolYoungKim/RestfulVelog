@@ -8,7 +8,9 @@ import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.EditArticle;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,8 +70,7 @@ public class ArticleService {
     }
 
 
-    //TODO: 페이징처리
-    //1. Page 반환
+    //내가 구글링으로 헤딩하며 겨우 구현했던 페이징 처리 -> querydsl로 쉽게구현하자.
     public Page<ResponseArticleDto> findAllToPage(Pageable pageable) {
 
         List<ResponseArticleDto> collect = articleRepository.findAll(pageable).get()
@@ -79,7 +80,16 @@ public class ArticleService {
         return new PageImpl<>(collect);
     }
 
+    // 삭제
+    public String deleteArticle(Long id) throws NullArticleException {
 
+        Article findArticle = articleRepository.findById(id)
+                .orElseThrow(() -> new NullArticleException("글이 없습니다."));
+
+        articleRepository.delete(findArticle);
+
+        return "delete-ok";
+    }
 
 }
 

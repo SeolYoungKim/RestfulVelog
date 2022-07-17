@@ -212,6 +212,24 @@ class ArticleControllerTest {
                 .andDo(print());
 
     }
+
+    @DisplayName("DELETE 테스트")
+    @Test
+    void deleteArticle() throws Exception {
+        Article article = Article.builder()
+                .title("title")
+                .text("text")
+                .build();
+
+        articleRepository.save(article);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/article/" + article.getAId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("delete-ok"))
+                .andDo(print());
+
+    }
 }
 
 

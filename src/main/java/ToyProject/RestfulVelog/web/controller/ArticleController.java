@@ -2,8 +2,8 @@ package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.service.ArticleService;
-import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.AddArticle;
+import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.EditArticle;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +60,12 @@ public class ArticleController {
             @RequestBody @Validated EditArticle editArticle) throws NullArticleException {
 
         return articleService.editArticle(id, editArticle);
+    }
+
+    @DeleteMapping("article/{id}")
+    public String deleteMapping(@PathVariable Long id) throws NullArticleException {
+        log.info("delete-ok");
+        return articleService.deleteArticle(id);
     }
 
 }

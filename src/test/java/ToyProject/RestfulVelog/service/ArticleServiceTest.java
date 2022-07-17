@@ -2,6 +2,7 @@ package ToyProject.RestfulVelog.service;
 
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
+import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.EditArticle;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
@@ -57,9 +58,9 @@ class ArticleServiceTest {
     void readAllArticle() {
         List<Article> requestArticles = IntStream.range(1, 31)
                 .mapToObj(i -> Article.builder()
-                                .title("제목 " + i)
-                                .text("내용 " + i)
-                                .build())
+                        .title("제목 " + i)
+                        .text("내용 " + i)
+                        .build())
                 .collect(Collectors.toList());
 
         articleRepository.saveAll(requestArticles);
@@ -97,4 +98,19 @@ class ArticleServiceTest {
 
     }
 
+    @DisplayName("글 삭제 테스트")
+    @Transactional
+    @Test
+    void articleDelete() throws NullArticleException {
+        Article article = Article.builder()
+                .title("제목입니다.")
+                .text("내용입니다.")
+                .build();
+
+        articleRepository.save(article);
+
+        articleService.deleteArticle(article.getAId());
+
+        assertThat(articleRepository.findAll().size()).isEqualTo(0);
+    }
 }
