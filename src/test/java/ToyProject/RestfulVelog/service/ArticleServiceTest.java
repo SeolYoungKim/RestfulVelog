@@ -1,7 +1,7 @@
 package ToyProject.RestfulVelog.service;
 
 import ToyProject.RestfulVelog.domain.Article;
-import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
+import ToyProject.RestfulVelog.repository.ArticleRepository;
 import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.web.request.AddArticle;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
@@ -106,13 +106,20 @@ class ArticleServiceTest {
                 .title("제목이지롱")
                 .text("글이지롱")
                 .build();
-        
+
         articleRepository.save(article);
 
         articleService.editArticle(article.getAId(), editArticle);
 
         assertThat(article.getTitle()).isEqualTo("제목이지롱");
         assertThat(article.getText()).isEqualTo("글이지롱");
+
+        //조회 후 비교
+        Article findArticle = articleRepository.findById(article.getAId())
+                .orElseThrow(() -> new NullArticleException("글이 없습니다."));
+
+        assertThat(findArticle.getTitle()).isEqualTo("제목이지롱");
+        assertThat(findArticle.getText()).isEqualTo("글이지롱");
 
     }
 

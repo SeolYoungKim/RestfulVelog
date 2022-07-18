@@ -1,4 +1,4 @@
-package ToyProject.RestfulVelog.domain.repository;
+package ToyProject.RestfulVelog.repository;
 
 import ToyProject.RestfulVelog.domain.Article;
 import org.springframework.data.jpa.repository.JpaRepository;

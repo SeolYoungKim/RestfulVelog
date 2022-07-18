@@ -54,8 +54,16 @@ public class ArticleController {
         return articleService.saveArticle(addArticle);
     }
 
-    @PostMapping("/article/{id}/edit")
-    public ResponseArticleDto updateArticle(
+//    @PostMapping("/article/{id}/edit")
+//    public ResponseArticleDto updateArticle(
+//            @PathVariable Long id,
+//            @RequestBody @Validated EditArticle editArticle) throws NullArticleException {
+//
+//        return articleService.editArticle(id, editArticle);
+//    }
+
+    @PatchMapping ("/article/{id}")
+    public ResponseArticleDto editArticle(
             @PathVariable Long id,
             @RequestBody @Validated EditArticle editArticle) throws NullArticleException {
 

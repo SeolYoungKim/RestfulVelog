@@ -1,8 +1,11 @@
 package ToyProject.RestfulVelog.web.controller;
 
 import ToyProject.RestfulVelog.domain.Article;
-import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
+import ToyProject.RestfulVelog.repository.ArticleRepository;
 import ToyProject.RestfulVelog.service.ArticleService;
+import ToyProject.RestfulVelog.web.request.AddArticle;
+import ToyProject.RestfulVelog.web.request.EditArticle;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -36,6 +38,8 @@ class ArticleControllerTest {
     @Autowired
     private ArticleRepository articleRepository;
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     void clear() {
         articleRepository.deleteAllInBatch();
@@ -54,12 +58,17 @@ class ArticleControllerTest {
     @Test
     void saveArticle() throws Exception {
 
-        String json = "{\"title\": \"제목입니다\", \"text\" : \"본문입니다\" }";
+        AddArticle addArticle = AddArticle.builder()
+                .title("제목입니다")
+                .text("본문입니다")
+                .build();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/write")
                         .contentType(APPLICATION_JSON)
-                        .content(json))
+                        .content(objectMapper.writeValueAsString(addArticle)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("제목입니다"))
+                .andExpect(jsonPath("$.text").value("본문입니다"))
                 .andDo(print());
 
     }
@@ -149,16 +158,12 @@ class ArticleControllerTest {
     @Test
     void pageOfArticles() throws Exception {
 
-        List<Article> articleList = new ArrayList<>();
-
-        for (int i = 0; i < 30; i++) {
-            articleList.add(
-                    Article.builder()
-                            .title("title" + i)
-                            .text("text" + i)
-                            .build()
-            );
-        }
+        List<Article> articleList = IntStream.range(1, 31)
+                .mapToObj(i -> Article.builder()
+                        .title("title" + i)
+                        .text("text" + i)
+                        .build())
+                .collect(Collectors.toList());
 
         articleRepository.saveAll(articleList);
 
@@ -166,13 +171,13 @@ class ArticleControllerTest {
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(5))
-                .andExpect(jsonPath("$.content.[0].title").value("title29"))
-                .andExpect(jsonPath("$.content.[0].text").value("text29"))
+                .andExpect(jsonPath("$.content.[0].title").value("title30"))
+                .andExpect(jsonPath("$.content.[0].text").value("text30"))
                 .andDo(print());
     }
 
     @Transactional
-    @DisplayName("/article/{id}/edit > 수정 테스트")
+    @DisplayName("/article/{id} 수정 테스트")
     @Test
     void editArticle() throws Exception {
         Article article = Article.builder()
@@ -181,13 +186,16 @@ class ArticleControllerTest {
                 .build();
 
         articleRepository.save(article);
-        Long aId = article.getAId();
 
-        String json = "{\"title\": \"제목입니다\", \"text\" : \"본문입니다\" }";
+        EditArticle editArticle = EditArticle.builder()
+                .title("제목입니다")
+                .text("본문입니다")
+                .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/article/" + aId + "/edit")
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/article/{id}", article.getAId())
                         .contentType(APPLICATION_JSON)
-                        .content(json))
+                        .content(objectMapper.writeValueAsString(editArticle)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("제목입니다"))
                 .andExpect(jsonPath("$.text").value("본문입니다"))
@@ -199,11 +207,14 @@ class ArticleControllerTest {
     @Test
     void validationArticleDto() throws Exception {
 
-        String json = "{\"title\":\"\",\"text\":\"\"}";
+        AddArticle addArticle = AddArticle.builder()
+                .title("")
+                .text("")
+                .build();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/write")
                         .contentType(APPLICATION_JSON)
-                        .content(json))
+                        .content(objectMapper.writeValueAsString(addArticle)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("404"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))

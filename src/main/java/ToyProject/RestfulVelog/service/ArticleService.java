@@ -1,7 +1,8 @@
 package ToyProject.RestfulVelog.service;
 
 import ToyProject.RestfulVelog.domain.Article;
-import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
+import ToyProject.RestfulVelog.domain.ArticleEditor;
+import ToyProject.RestfulVelog.repository.ArticleRepository;
 import ToyProject.RestfulVelog.exception.NullArticleException;
 import ToyProject.RestfulVelog.web.request.AddArticle;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,15 +35,26 @@ public class ArticleService {
         return new ResponseArticleDto(article);
     }
 
+    @Transactional
     public ResponseArticleDto editArticle(Long id, EditArticle editArticle) throws NullArticleException {
         Article findArticle = articleRepository.findById(id)
                 .orElseThrow(() -> new NullArticleException("글이 없습니다."));  //id로 객체를 찾는다
 
-        findArticle.edit(editArticle);
+//        findArticle.edit(editArticle);
 
-        Article editedArticle = articleRepository.save(findArticle);
+        // @Transcational을 걸어주면, 아래 저장 메서드를 불러오지 않아도 저장이 된다. TODO: @Transactional 공부
+//        Article editedArticle = articleRepository.save(findArticle);
 
-        return new ResponseArticleDto(editedArticle);
+        ArticleEditor.ArticleEditorBuilder articleEditorBuilder = findArticle.toEditor();
+
+        ArticleEditor articleEditor = articleEditorBuilder
+                .title(editArticle.getTitle())
+                .text(editArticle.getText())
+                .build();
+
+        findArticle.edit(articleEditor);
+
+        return new ResponseArticleDto(findArticle);
     }
 
     public ResponseArticleDto findById(Long id) throws NullArticleException {
