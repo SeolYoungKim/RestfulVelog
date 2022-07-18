@@ -3,6 +3,7 @@ package ToyProject.RestfulVelog.service;
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.repository.ArticleRepository;
 import ToyProject.RestfulVelog.exception.NullArticleException;
+import ToyProject.RestfulVelog.web.request.AddArticle;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.EditArticle;
 import ToyProject.RestfulVelog.web.response.ResponseArticleDto;
@@ -33,13 +34,14 @@ class ArticleServiceTest {
         articleRepository.deleteAll();
     }
 
+    @DisplayName("글 리포지토리에 직접 저장 테스트")
     @Test
     @Transactional
     void articleRepoTest() {
         //given
         Article article1 = Article.builder()
                 .title("제목1")
-                .text("제목2")
+                .text("내용")
                 .build();
 
         articleRepository.save(article1);
@@ -50,6 +52,21 @@ class ArticleServiceTest {
         //then
         assertThat(findByTitle.get(0)).isEqualTo(article1);
         assertThat(findByTitle.size()).isEqualTo(1);
+    }
+
+    @DisplayName("글 서비스 클래스를 통한 저장 테스트")
+    @Transactional
+    @Test
+    void articleServiceAddTest() {
+        AddArticle addArticle = AddArticle.builder()
+                .title("제목")
+                .text("내용")
+                .build();
+
+        articleService.saveArticle(addArticle);
+
+        assertThat(articleRepository.findAll().size()).isEqualTo(1);
+        assertThat(articleRepository.findAll().get(0).getTitle()).isEqualTo("제목");
     }
 
     @DisplayName("글 1페이지 조회")
@@ -85,10 +102,11 @@ class ArticleServiceTest {
                 .text("글")
                 .build();
 
-        EditArticle editArticle = new EditArticle();
-        editArticle.setTitle("제목이지롱");
-        editArticle.setText("글이지롱");
-
+        EditArticle editArticle = EditArticle.builder()
+                .title("제목이지롱")
+                .text("글이지롱")
+                .build();
+        
         articleRepository.save(article);
 
         articleService.editArticle(article.getAId(), editArticle);

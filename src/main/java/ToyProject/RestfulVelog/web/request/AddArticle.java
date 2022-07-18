@@ -1,5 +1,6 @@
 package ToyProject.RestfulVelog.web.request;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,4 +16,10 @@ public class AddArticle {
 
     @NotBlank(message = "본문을 입력하세요.")
     private String text;
+
+    @Builder
+    public AddArticle(String title, String text) {
+        this.title = title;
+        this.text = text;
+    }
 }

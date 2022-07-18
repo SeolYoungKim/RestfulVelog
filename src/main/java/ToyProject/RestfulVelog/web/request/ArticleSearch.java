@@ -24,7 +24,7 @@ public class ArticleSearch {
 //        this.pageSize = pageSize;
 //    }
 
-    public long getOffset() {
+    public long getOffset() {  // page가 변할 때 마다 offset이 변동되므로, 페이지 별로 적절한 아티클을 가져올 수 있다.
         return (long) (max(1, page) - 1) * min(size, MAX_SIZE);
     }
 }
