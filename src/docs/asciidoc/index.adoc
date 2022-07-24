@@ -1,16 +1,33 @@
 = Restful Velog API
-:toc:
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
 
-== Hi가 정상적으로 출력되는지
+== 글 단건 조회
 
 === 요청
 
-include::{snippets}/index/http-request.adoc[]
+include::{snippets}/readArticle/http-request.adoc[]
+
+include::{snippets}/readArticle/path-parameters.adoc[]
 
 === 응답
 
-include::{snippets}/index/http-response.adoc[]
+include::{snippets}/readArticle/http-response.adoc[]
 
-=== CURL
+include::{snippets}/readArticle/response-fields.adoc[]
 
-include::{snippets}/index/curl-request.adoc[]
+== 글 저장 기능
+
+=== 요청
+
+include::{snippets}/addArticle/http-request.adoc[]
+include::{snippets}/addArticle/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/addArticle/http-response.adoc[]
+include::{snippets}/addArticle/response-fields.adoc[]

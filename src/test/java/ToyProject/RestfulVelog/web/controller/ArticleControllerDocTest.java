@@ -20,6 +20,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,8 +94,9 @@ public class ArticleControllerDocTest {
                 .andExpect(status().isOk())
                 .andDo(document("addArticle",
                         requestFields(
-                                fieldWithPath("title").description("등록하고자 하는 제목입니다."),
-                                fieldWithPath("text").description("등록하고자 하는 내용입니다.")
+                                fieldWithPath("title").description("등록하고자 하는 제목입니다.")
+                                        .attributes(key("constraint").value("제목에 바보는 들어가면 안됩니다.")),
+                                fieldWithPath("text").description("등록하고자 하는 내용입니다.").optional()
                         ),
                         responseFields(
                                 fieldWithPath("id").description("게시글의 ID 입니다."),
