@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -36,21 +37,20 @@ public class ExceptionController {
         return errorResult;
     }
 
+    //TODO: 예외처리 하는 방식 한번 더 복습!
     @ExceptionHandler(VelogException.class)
     public ResponseEntity<ErrorResult> velogException(VelogException e) {
         log.error("[ERROR]", e);
 
         int statusCode = e.getStatusCode();
         String message = e.getMessage();
+        Map<String, String> validation = e.getValidation();
 
         ErrorResult errorResult = ErrorResult.builder()
                 .code(String.valueOf(statusCode))
                 .message(message)
-                .causedBy(e.getValidation())
+                .causedBy(validation)
                 .build();
-
-        //응답 json validation -> title : 제목에 바보를 포함할 수 없습니다.
-
 
         return ResponseEntity.status(statusCode)
                 .body(errorResult);
