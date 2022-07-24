@@ -7,9 +7,13 @@
 
 include::{snippets}/readArticle/http-request.adoc[]
 
+include::{snippets}/readArticle/path-parameters.adoc[]
+
 === 응답
 
 include::{snippets}/readArticle/http-response.adoc[]
+
+include::{snippets}/readArticle/response-fields.adoc[]
 
 === CURL
 

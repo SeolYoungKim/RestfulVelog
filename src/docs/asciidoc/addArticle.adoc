@@ -1,0 +1,18 @@
+= Restful Velog API
+:toc:
+
+== 글 저장 기능
+
+=== 요청
+
+include::{snippets}/addArticle/http-request.adoc[]
+include::{snippets}/addArticle/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/addArticle/http-response.adoc[]
+include::{snippets}/addArticle/response-fields.adoc[]
+
+=== CURL
+
+include::{snippets}/readArticle/curl-request.adoc[]
