@@ -1,6 +1,6 @@
 package ToyProject.RestfulVelog.web.controller;
 
-import ToyProject.RestfulVelog.exception.NullArticleException;
+import ToyProject.RestfulVelog.exception.ArticleNotFound;
 import ToyProject.RestfulVelog.service.ArticleService;
 import ToyProject.RestfulVelog.web.request.AddArticle;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
@@ -31,7 +31,7 @@ public class ArticleController {
     }
 
     @GetMapping("/article/{id}")
-    public ResponseArticleDto readArticle(@PathVariable Long id) throws NullArticleException {
+    public ResponseArticleDto readArticle(@PathVariable Long id) throws ArticleNotFound {
         return articleService.findById(id);
     }
 
@@ -65,13 +65,13 @@ public class ArticleController {
     @PatchMapping ("/article/{id}")
     public ResponseArticleDto editArticle(
             @PathVariable Long id,
-            @RequestBody @Validated EditArticle editArticle) throws NullArticleException {
+            @RequestBody @Validated EditArticle editArticle) throws ArticleNotFound {
 
         return articleService.editArticle(id, editArticle);
     }
 
     @DeleteMapping("article/{id}")
-    public String deleteMapping(@PathVariable Long id) throws NullArticleException {
+    public String deleteMapping(@PathVariable Long id) throws ArticleNotFound {
         log.info("delete-ok");
         return articleService.deleteArticle(id);
     }

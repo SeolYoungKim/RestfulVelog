@@ -2,7 +2,7 @@ package ToyProject.RestfulVelog.service;
 
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.repository.ArticleRepository;
-import ToyProject.RestfulVelog.exception.NullArticleException;
+import ToyProject.RestfulVelog.exception.ArticleNotFound;
 import ToyProject.RestfulVelog.web.request.AddArticle;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.EditArticle;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class ArticleServiceTest {
@@ -91,12 +92,29 @@ class ArticleServiceTest {
         assertThat(articles.size()).isEqualTo(10);
         assertThat(articles.get(0).getTitle()).isEqualTo("제목 30");
         assertThat(articles.get(9).getTitle()).isEqualTo("제목 21");
+
     }
+
+    @DisplayName("잘못된 글을 조회할 시, ArticleNotFound 예외가 발생한다.")
+    @Test
+    void readArticle() throws ArticleNotFound {
+        Article article = Article.builder()
+                .title("제목")
+                .text("글")
+                .build();
+
+        articleRepository.save(article);
+
+        assertThatThrownBy(() -> articleService.findById(2343L))
+                .isInstanceOf(ArticleNotFound.class);
+    }
+
 
     @DisplayName("글 수정 테스트")
     @Transactional
     @Test
     void articleEdit() throws Exception {
+
         Article article = Article.builder()
                 .title("제목")
                 .text("글")
@@ -116,7 +134,7 @@ class ArticleServiceTest {
 
         //조회 후 비교
         Article findArticle = articleRepository.findById(article.getAId())
-                .orElseThrow(() -> new NullArticleException("글이 없습니다."));
+                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));
 
         assertThat(findArticle.getTitle()).isEqualTo("제목이지롱");
         assertThat(findArticle.getText()).isEqualTo("글이지롱");
@@ -126,7 +144,7 @@ class ArticleServiceTest {
     @DisplayName("글 삭제 테스트")
     @Transactional
     @Test
-    void articleDelete() throws NullArticleException {
+    void articleDelete() throws ArticleNotFound {
         Article article = Article.builder()
                 .title("제목입니다.")
                 .text("내용입니다.")

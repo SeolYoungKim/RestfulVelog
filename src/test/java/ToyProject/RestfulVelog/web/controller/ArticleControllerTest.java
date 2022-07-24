@@ -234,7 +234,7 @@ class ArticleControllerTest {
 
         articleRepository.save(article);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/article/" + article.getAId())
+        mockMvc.perform(MockMvcRequestBuilders.delete("/article/{id}", article.getAId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("delete-ok"))

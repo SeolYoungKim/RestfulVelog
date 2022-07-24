@@ -34,8 +34,8 @@ public class ExceptionController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(NullArticleException.class)
-    public ErrorResult nullArticleHandler(NullArticleException e) {
+    @ExceptionHandler(ArticleNotFound.class)
+    public ErrorResult nullArticleHandler(ArticleNotFound e) {
         log.error("[ERROR]", e);
 
         String message = e.getMessage();

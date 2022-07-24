@@ -3,7 +3,7 @@ package ToyProject.RestfulVelog.service;
 import ToyProject.RestfulVelog.domain.Article;
 import ToyProject.RestfulVelog.domain.ArticleEditor;
 import ToyProject.RestfulVelog.repository.ArticleRepository;
-import ToyProject.RestfulVelog.exception.NullArticleException;
+import ToyProject.RestfulVelog.exception.ArticleNotFound;
 import ToyProject.RestfulVelog.web.request.AddArticle;
 import ToyProject.RestfulVelog.web.request.ArticleSearch;
 import ToyProject.RestfulVelog.web.request.EditArticle;
@@ -36,9 +36,9 @@ public class ArticleService {
     }
 
     @Transactional
-    public ResponseArticleDto editArticle(Long id, EditArticle editArticle) throws NullArticleException {
+    public ResponseArticleDto editArticle(Long id, EditArticle editArticle) throws ArticleNotFound {
         Article findArticle = articleRepository.findById(id)
-                .orElseThrow(() -> new NullArticleException("글이 없습니다."));  //id로 객체를 찾는다
+                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));  //id로 객체를 찾는다
 
 //        findArticle.edit(editArticle);
 
@@ -57,9 +57,9 @@ public class ArticleService {
         return new ResponseArticleDto(findArticle);
     }
 
-    public ResponseArticleDto findById(Long id) throws NullArticleException {
+    public ResponseArticleDto findById(Long id) throws ArticleNotFound {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new NullArticleException("글이 없습니다."));
+                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));
 
         return new ResponseArticleDto(article);
     }
@@ -94,10 +94,10 @@ public class ArticleService {
     }
 
     // 삭제
-    public String deleteArticle(Long id) throws NullArticleException {
+    public String deleteArticle(Long id) throws ArticleNotFound {
 
         Article findArticle = articleRepository.findById(id)
-                .orElseThrow(() -> new NullArticleException("글이 없습니다."));
+                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));
 
         articleRepository.delete(findArticle);
 

@@ -37,7 +37,7 @@ public class Article {
     public ArticleEditor.ArticleEditorBuilder toEditor() {
         return ArticleEditor.builder()
                 .title(this.title)
-                .text(this.text);  // builder를 그대로 넘겨준다.
+                .text(this.text);  // builder를 그대로 넘겨준다. **기존의 내용을 담아서** <- 중요 포인트.
     }
 
     public void edit(ArticleEditor articleEditor) {
