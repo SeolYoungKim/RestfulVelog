@@ -1,0 +1,16 @@
+= Restful Velog API
+:toc:
+
+== 글 단건 조회
+
+=== 요청
+
+include::{snippets}/readArticle/http-request.adoc[]
+
+=== 응답
+
+include::{snippets}/readArticle/http-response.adoc[]
+
+=== CURL
+
+include::{snippets}/readArticle/curl-request.adoc[]
