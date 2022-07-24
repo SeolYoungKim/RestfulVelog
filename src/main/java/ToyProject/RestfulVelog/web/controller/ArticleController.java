@@ -51,16 +51,14 @@ public class ArticleController {
 
     @PostMapping("/write")
     public ResponseArticleDto writeArticle(@RequestBody @Validated AddArticle addArticle) {
+//        if (addArticle.getTitle().contains("바보")) {  // 데이터를 꺼내와서 조합하고 검증하는 것은 지양한다.
+//            throw new InvalidRequest();
+//        }
+
+        addArticle.validate();
+
         return articleService.saveArticle(addArticle);
     }
-
-//    @PostMapping("/article/{id}/edit")
-//    public ResponseArticleDto updateArticle(
-//            @PathVariable Long id,
-//            @RequestBody @Validated EditArticle editArticle) throws NullArticleException {
-//
-//        return articleService.editArticle(id, editArticle);
-//    }
 
     @PatchMapping ("/article/{id}")
     public ResponseArticleDto editArticle(

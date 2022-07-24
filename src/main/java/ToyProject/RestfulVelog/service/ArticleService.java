@@ -38,7 +38,7 @@ public class ArticleService {
     @Transactional
     public ResponseArticleDto editArticle(Long id, EditArticle editArticle) throws ArticleNotFound {
         Article findArticle = articleRepository.findById(id)
-                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));  //id로 객체를 찾는다
+                .orElseThrow(ArticleNotFound::new);  //id로 객체를 찾는다
 
 //        findArticle.edit(editArticle);
 
@@ -59,7 +59,7 @@ public class ArticleService {
 
     public ResponseArticleDto findById(Long id) throws ArticleNotFound {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));
+                .orElseThrow(ArticleNotFound::new);
 
         return new ResponseArticleDto(article);
     }
@@ -97,7 +97,7 @@ public class ArticleService {
     public String deleteArticle(Long id) throws ArticleNotFound {
 
         Article findArticle = articleRepository.findById(id)
-                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));
+                .orElseThrow(ArticleNotFound::new);
 
         articleRepository.delete(findArticle);
 

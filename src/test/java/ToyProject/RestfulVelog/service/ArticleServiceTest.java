@@ -95,7 +95,7 @@ class ArticleServiceTest {
 
     }
 
-    @DisplayName("잘못된 글을 조회할 시, ArticleNotFound 예외가 발생한다.")
+    @DisplayName("존재하지 않는 글을 조회할 시, ArticleNotFound 예외가 발생한다.")
     @Test
     void readArticle() throws ArticleNotFound {
         Article article = Article.builder()
@@ -134,11 +134,31 @@ class ArticleServiceTest {
 
         //조회 후 비교
         Article findArticle = articleRepository.findById(article.getAId())
-                .orElseThrow(() -> new ArticleNotFound("글이 없습니다."));
+                .orElseThrow(ArticleNotFound::new);
 
         assertThat(findArticle.getTitle()).isEqualTo("제목이지롱");
         assertThat(findArticle.getText()).isEqualTo("글이지롱");
 
+    }
+
+    @DisplayName("존재하지 않는 글을 수정할 시, ArticleNotFound 예외가 발생한다.")
+    @Test
+    void editArticle() throws ArticleNotFound {
+        Article article = Article.builder()
+                .title("제목")
+                .text("글")
+                .build();
+
+        EditArticle editArticle = EditArticle.builder()
+                .title("제목이지롱")
+                .text("글이지롱")
+                .build();
+
+        articleRepository.save(article);
+
+
+        assertThatThrownBy(() -> articleService.editArticle(article.getAId() + 3434, editArticle))
+                .isInstanceOf(ArticleNotFound.class);
     }
 
     @DisplayName("글 삭제 테스트")
@@ -155,5 +175,20 @@ class ArticleServiceTest {
         articleService.deleteArticle(article.getAId());
 
         assertThat(articleRepository.findAll().size()).isEqualTo(0);
+    }
+
+    @DisplayName("존재하지 않는 글 삭제 테스트")
+    @Transactional
+    @Test
+    void articleDeleteNoExist() throws ArticleNotFound {
+        Article article = Article.builder()
+                .title("제목입니다.")
+                .text("내용입니다.")
+                .build();
+
+        articleRepository.save(article);
+
+        assertThatThrownBy(() -> articleService.deleteArticle(article.getAId() + 2324))
+                .isInstanceOf(ArticleNotFound.class);
     }
 }

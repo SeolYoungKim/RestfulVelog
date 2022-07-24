@@ -1,7 +1,10 @@
-package ToyProject.RestfulVelog.exception;
+package ToyProject.RestfulVelog.web.controller;
 
+import ToyProject.RestfulVelog.exception.VelogException;
+import ToyProject.RestfulVelog.web.response.ErrorResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,7 +25,7 @@ public class ExceptionController {
         List<FieldError> fieldErrors = e.getFieldErrors();
 
         ErrorResult errorResult = ErrorResult.builder()
-                .code("404")
+                .code("400")
                 .message("잘못된 요청입니다.")
                 .build();
 
@@ -33,22 +36,27 @@ public class ExceptionController {
         return errorResult;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ArticleNotFound.class)
-    public ErrorResult nullArticleHandler(ArticleNotFound e) {
+    @ExceptionHandler(VelogException.class)
+    public ResponseEntity<ErrorResult> velogException(VelogException e) {
         log.error("[ERROR]", e);
 
+        int statusCode = e.getStatusCode();
         String message = e.getMessage();
 
         ErrorResult errorResult = ErrorResult.builder()
-                .code("404")
-                .message("잘못된 요청입니다.")
+                .code(String.valueOf(statusCode))
+                .message(message)
+                .causedBy(e.getValidation())
                 .build();
 
-        errorResult.causedByField("pathVariable", "조회할 글이 없습니다.");
+        //응답 json validation -> title : 제목에 바보를 포함할 수 없습니다.
 
-        return errorResult;
+
+        return ResponseEntity.status(statusCode)
+                .body(errorResult);
     }
+
+
 }
 
 

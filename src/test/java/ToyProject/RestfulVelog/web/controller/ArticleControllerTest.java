@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,7 +48,7 @@ class ArticleControllerTest {
     @Test
     @DisplayName("/ 요청 시 Hi! 를 출력한다.")
     void printHi() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/"))
+        mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Hi!"));
 
@@ -63,12 +63,29 @@ class ArticleControllerTest {
                 .text("본문입니다")
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/write")
+        mockMvc.perform(post("/write")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(addArticle)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("제목입니다"))
                 .andExpect(jsonPath("$.text").value("본문입니다"))
+                .andDo(print());
+
+    }
+
+    @DisplayName("글 저장 시 제목에 바보는 포함될 수 없다.")
+    @Test
+    void saveArticle2() throws Exception {
+
+        AddArticle addArticle = AddArticle.builder()
+                .title("나는 바보입니다.")
+                .text("본문입니다")
+                .build();
+
+        mockMvc.perform(post("/write")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addArticle)))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
 
     }
@@ -90,7 +107,7 @@ class ArticleControllerTest {
 
 
         // 글이 있을 때
-        mockMvc.perform(MockMvcRequestBuilders.get("/article/" + aId)
+        mockMvc.perform(get("/article/" + aId)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(aId))
@@ -98,13 +115,18 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.text").value(article.getText()))
                 .andDo(print());
 
-        // 글이 없을 때
-        mockMvc.perform(MockMvcRequestBuilders.get("/article/2343")
+    }
+
+    @DisplayName("존재하지 않는 게시글 조회")
+    @Test
+    void notExistReadArticle() throws Exception {
+
+
+        mockMvc.perform(get("/article/{id}", 1L)
                         .contentType(APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("404"))
-                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
-                .andExpect(jsonPath("$.causedBy.pathVariable").value("조회할 글이 없습니다."))
+                .andExpect(jsonPath("$.message").value("조회할 글이 없습니다."))
                 .andDo(print());
     }
 
@@ -121,7 +143,7 @@ class ArticleControllerTest {
 
         articleRepository.saveAll(requestArticles);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/articles?page=1&size=10")
+        mockMvc.perform(get("/articles?page=1&size=10")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(10))
@@ -144,7 +166,7 @@ class ArticleControllerTest {
 
         articleRepository.saveAll(requestArticles);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/articles?page=0&size=10")
+        mockMvc.perform(get("/articles?page=0&size=10")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(10))
@@ -154,7 +176,7 @@ class ArticleControllerTest {
 
     }
 
-    @DisplayName(("/page 조회 시, 페이징 처리가 된 결과를 얻을 수 있다."))
+    @DisplayName("/page 조회 시, 페이징 처리가 된 결과를 얻을 수 있다.")
     @Test
     void pageOfArticles() throws Exception {
 
@@ -167,7 +189,7 @@ class ArticleControllerTest {
 
         articleRepository.saveAll(articleList);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/page")
+        mockMvc.perform(get("/page")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(5))
@@ -193,12 +215,32 @@ class ArticleControllerTest {
                 .build();
 
 
-        mockMvc.perform(MockMvcRequestBuilders.patch("/article/{id}", article.getAId())
+        mockMvc.perform(patch("/article/{id}", article.getAId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(editArticle)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("제목입니다"))
                 .andExpect(jsonPath("$.text").value("본문입니다"))
+                .andDo(print());
+
+    }
+
+    @DisplayName("존재하지 않는 글 수정 테스트")
+    @Test
+    void notExistEditArticle() throws Exception {
+
+        EditArticle editArticle = EditArticle.builder()
+                .title("제목입니다")
+                .text("본문입니다")
+                .build();
+
+
+        mockMvc.perform(patch("/article/{id}", 1L)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(editArticle)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("조회할 글이 없습니다."))
                 .andDo(print());
 
     }
@@ -212,11 +254,11 @@ class ArticleControllerTest {
                 .text("")
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/write")
+        mockMvc.perform(post("/write")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(addArticle)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
                 .andExpect(jsonPath("$.causedBy.title").value("제목을 입력하세요."))
                 .andExpect(jsonPath("$.causedBy.text").value("본문을 입력하세요."))
@@ -234,10 +276,23 @@ class ArticleControllerTest {
 
         articleRepository.save(article);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/article/{id}", article.getAId())
+        mockMvc.perform(delete("/article/{id}", article.getAId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("delete-ok"))
+                .andDo(print());
+
+    }
+
+    @DisplayName("존재하지 않는 글 DELETE 테스트")
+    @Test
+    void notExistDeleteArticle() throws Exception {
+
+        mockMvc.perform(delete("/article/{id}", 1L)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("조회할 글이 없습니다."))
                 .andDo(print());
 
     }

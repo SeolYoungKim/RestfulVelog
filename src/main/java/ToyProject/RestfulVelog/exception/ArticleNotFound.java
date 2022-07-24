@@ -1,23 +1,23 @@
 package ToyProject.RestfulVelog.exception;
 
-public class ArticleNotFound extends Exception{
+/**
+ * status -> 404
+ */
+
+public class ArticleNotFound extends VelogException {
+
+    private static final String MESSAGE = "조회할 글이 없습니다.";
+
     public ArticleNotFound() {
-        super();
-    }
-
-    public ArticleNotFound(String message) {
-        super(message);
-    }
-
-    public ArticleNotFound(String message, Throwable cause) {
-        super(message, cause);
+        super(MESSAGE);
     }
 
     public ArticleNotFound(Throwable cause) {
-        super(cause);
+        super(MESSAGE, cause);
     }
 
-    protected ArticleNotFound(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    @Override
+    public int getStatusCode() {
+        return 404;
     }
 }
