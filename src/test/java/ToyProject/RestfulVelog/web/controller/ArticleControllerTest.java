@@ -143,8 +143,10 @@ class ArticleControllerTest {
 
         articleRepository.saveAll(requestArticles);
 
-        mockMvc.perform(get("/articles?page=1&size=10")
-                        .contentType(APPLICATION_JSON))
+        mockMvc.perform(get("/articles")
+                        .contentType(APPLICATION_JSON)
+                        .param("page", "1")  // ?page=1&size=10
+                        .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(10))
                 .andExpect(jsonPath("$[0].title").value("제목 30"))
