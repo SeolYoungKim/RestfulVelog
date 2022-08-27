@@ -38,25 +38,57 @@ axios.get("/api/articles?page=1&&size=5").then(response => {
       <div class="content">
         {{ post.text }}
       </div>
+
+      <div class="sub d-flex">
+        <span class="category">개발</span>
+        <span class="regDate">2022-08-26</span>
+      </div>
+
     </li>
   </ul>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 ul {
   list-style: none;
   padding: 0;
+
+  li {
+    margin-bottom: 2rem;
+
+    .title {
+      a {
+        font-size: 1.1rem;
+        color: #383838;
+        text-decoration: none;
+      }
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .content {
+      font-size: 0.85rem;
+      margin-top: 8px;
+      color: #7e7e7e;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .sub {
+      margin-top: 8px;
+      font-size: 0.78rem;
+
+      .regDate {
+        margin-left: 10px;
+        color: #6b6b6b;
+      }
+    }
+  }
 }
 
-li {
-  margin-bottom: 1.3rem;
-}
 
-li.title {
-  font-size: 1.1rem;
-}
-
-li:last-child {
-  margin-bottom: 0;
-}
 </style>
